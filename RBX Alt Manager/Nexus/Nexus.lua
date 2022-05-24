@@ -375,3 +375,5 @@ if not Nexus_Version then
     Nexus:Connect()
     Nexus.Connected:Wait()
 end
+                                
+return Nexus
