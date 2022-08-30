@@ -54,7 +54,7 @@ local function POST(Method, Account, Body, ...)
 
     if Response.StatusCode ~= 200 then return false end
 
-    return Response.Body
+    return Response.Body, Reponse.StatusCode
 end
 
 function Account.new(Username, SkipValidation)
