@@ -31,7 +31,7 @@ local function GET(Method, Account, ...)
 
     if Response.StatusCode ~= 200 then return false end
 
-    return Response.Body
+    return Response.Body, Response.StatusCode
 end
 
 local function POST(Method, Account, Body, ...)
