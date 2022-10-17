@@ -11,6 +11,7 @@ function WebserverSettings:SetPort(Port) self.Port = Port end
 function WebserverSettings:SetPassword(Password) self.Password = Password end
 
 local HttpService = game:GetService'HttpService'
+local Request = (syn and syn.request) or request or (http and http.request) or http_request
 
 local function GET(Method, Account, ...)
     local Arguments = {...}
@@ -24,14 +25,14 @@ local function GET(Method, Account, ...)
         Url = Url .. '&Password=' .. WebserverSettings.Password
     end
     
-    local Response = syn.request {
+    local Response = Request {
         Method = 'GET',
         Url = Url
     }
 
     if Response.StatusCode ~= 200 then return false end
 
-    return Response.Body, Response.StatusCode
+    return Response
 end
 
 local function POST(Method, Account, Body, ...)
@@ -46,7 +47,7 @@ local function POST(Method, Account, Body, ...)
         Url = Url .. '&Password=' .. WebserverSettings.Password
     end
     
-    local Response = syn.request {
+    local Response = Request {
         Method = 'POST',
         Url = Url,
         Body = Body
@@ -54,13 +55,13 @@ local function POST(Method, Account, Body, ...)
 
     if Response.StatusCode ~= 200 then return false end
 
-    return Response.Body, Reponse.StatusCode
+    return Response.Body
 end
 
 function Account.new(Username, SkipValidation)
     local self = {} setmetatable(self, Account)
 
-    local IsValid = SkipValidation or GET('Test', Username)
+    local IsValid = SkipValidation or GET('GetCSRFToken', Username)
 
     if not IsValid or IsValid == 'Invalid Account' then return false end
 
@@ -105,7 +106,7 @@ function Account:RemoveField(Field) return GET('RemoveField', self.Username, 'Fi
 function Account:SetServer(PlaceId, JobId) return GET('SetServer', self.Username, 'PlaceId=' .. PlaceId, 'JobId=' .. JobId) end
 function Account:SetRecommendedServer(PlaceId) return GET('SetServer', self.Username, 'PlaceId=' .. PlaceId) end
 
-function Account:ImportAccount(Token) return GET('ImportAccount', 'Token=' .. Token) end
+function Account:ImportCookie(Token) return GET('ImportCookie', 'Cookie=' .. Token) end
 function Account:GetCookie() return GET('GetCookie', self.Username) end
 function Account:LaunchAccount(PlaceId, JobId, FollowUser, JoinVip) -- if you want to follow someone, PlaceId must be their user id
     return GET('LaunchAccount', self.Username, 'PlaceId=' .. PlaceId, JobId and ('JobId=' .. JobId), FollowUser and 'FollowUser=true', JoinVip and 'JoinVIP=true')
